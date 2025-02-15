@@ -96,14 +96,14 @@
 	
 	    <repository>
 	      <id>nexus</id>
-	      <name>Mithun Technologies Releases Nexus Repository</name>
-	      <url>http://172.31.37.89:9980/mithuntechnologies/repository/axisbank-releases/</url>
+	      <name>Releases Nexus Repository</name>
+	      <url>http://13.201.69.138:9989/mithun/repository/flipkart-release-1/</url>
 	    </repository>
 	    
 	    <snapshotRepository>
 	      <id>nexus</id>
-	      <name>Mithun Technologies Snapshot Nexus Repository </name>
-	      <url>http://172.31.37.89:9980/mithuntechnologies/repository/aixsbank-snapshot/</url>
+	      <name>Snapshot Nexus Repository </name>
+	      <url>http://13.201.69.138:9989/mithun/repository/flipkart-snapshot1/</url>
 	    </snapshotRepository>
 	    
 	</distributionManagement>
