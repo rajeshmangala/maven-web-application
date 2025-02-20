@@ -1,0 +1,49 @@
+node{
+def mavenHome = tool name:'maven3.9.9'
+try{
+stage('checkOutCode'){git branch: 'development', credentialsId: '22621b64-8b05-4351-8c56-a49b53766c90', url: 'https://github.com/rajeshmangala/maven-web-application.git'}
+stage('Build'){
+sh"${mavenHome}/bin/mvn clean package"
+}
+stage('executeSonarcubeReport'){
+sh"${mavenHome}/bin/mvn clean sonar:sonar"
+}
+stage('uploadartfactintoNexus'){
+sh"${mavenHome}/bin/mvn clean deploy"
+}
+stage('deployappintoTomcatServer'){
+sshagent(['62aa6d13-a6c6-4a41-88b7-7c45b790a953']) {
+   sh"scp -o StrictHostKeyChecking=no target/maven-web-application.war ec2-user@172.31.13.235:/opt/apache-tomcat-9.0.98/webapps/"
+}
+}
+}
+catch(e){
+currentBuild.result = "FAILURE"
+throw e
+}
+finally{
+sendSlackNotification(currentBuild.result)
+}
+}
+
+def sendSlackNotification(String buildStatus = 'STARTED') {
+  // build status of null means successful
+  buildStatus =  buildStatus ?: 'SUCCESSFUL'
+
+  // Default values
+  def colorName = 'RED'
+  def colorCode = '#FF0000'
+  def subject = "${buildStatus}: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]'"
+  def summary = "${subject} (${env.BUILD_URL})"
+
+  // Override default values based on build status
+  if (buildStatus == 'STARTED') {
+    color = 'YELLOW'
+    colorCode = '#FFFF00'
+  } else if (buildStatus == 'SUCCESSFUL') {
+    color = 'GREEN'
+    colorCode = '#00FF00'
+  } else {
+    color = 'RED'
+    colorCode = '#FF0000'
+  }
